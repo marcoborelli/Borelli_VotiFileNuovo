@@ -120,7 +120,7 @@ namespace Borelli_VotiFileNuovo
             {
                 while ((riga = read.ReadLine()) !=null) //continuo a copiare finche non arrivo al ^. Poi lo aggiungo
                 {
-                    if (riga != "^" && riga != "/")
+                    if (riga != "^" && riga != "/" && riga != "*") //se è un carattere non posso fare substring, quindi sapendo che sono minimo 5 lo copio e stop
                     {
                         if (riga.Substring(0, 5) != OttieniIndiceFile(OttieniIndiceAlbero(albero.SelectedNode.Text, albero)))
                         {
@@ -140,7 +140,6 @@ namespace Borelli_VotiFileNuovo
             }
             SovrascrivereFile(fileTemp, fileOrig);
 
-
         }
 
         public static int OttieniIndiceAlbero(string nome, TreeView albero)
@@ -153,8 +152,9 @@ namespace Borelli_VotiFileNuovo
                 while (condizione)
                 {
                     riga = read.ReadLine();
+                    //MessageBox.Show($"RIGA: {riga}");
                     riga = riga.Substring(5, riga.Length - 5);
-                    if (riga == nome)
+                    if (riga == nome)//quando il nome è uguale esco dal ciclo e ho l'indice a cui si trova
                         condizione = false;
                     else
                         indice++;
