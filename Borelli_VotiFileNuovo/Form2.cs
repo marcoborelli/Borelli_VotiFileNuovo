@@ -114,20 +114,29 @@ namespace Borelli_VotiFileNuovo
         {
             string riga;
 
-            using (StreamWriter write = new StreamWriter(fileTemp)) { }
+            using (StreamWriter write = new StreamWriter(fileTemp)) { } //creo file temporaneo
 
-            using (StreamReader read = new StreamReader(fileOrig))
+            using (StreamReader read = new StreamReader(fileOrig)) //inizio a leggere file originale
             {
-                while ((riga = read.ReadLine()) != "^") //continuo a copiare finche non arrivo al ^. Poi lo aggiungo
+                while ((riga = read.ReadLine()) !=null) //continuo a copiare finche non arrivo al ^. Poi lo aggiungo
                 {
-                    if (riga.Substring(0, 5) != OttieniIndiceFile(OttieniIndiceAlbero(albero.SelectedNode.Text, albero)))
+                    if (riga != "^" && riga != "/")
+                    {
+                        if (riga.Substring(0, 5) != OttieniIndiceFile(OttieniIndiceAlbero(albero.SelectedNode.Text, albero)))
+                        {
+                            using (StreamWriter write = new StreamWriter(fileTemp, true))
+                                write.WriteLine(riga);
+                        }
+                    }
+                    else
                     {
                         using (StreamWriter write = new StreamWriter(fileTemp, true))
                             write.WriteLine(riga);
                     }
+                    
                 }
-                using (StreamWriter write = new StreamWriter(fileTemp, true))
-                    write.WriteLine("^");
+                //using (StreamWriter write = new StreamWriter(fileTemp, true))
+                    //write.WriteLine("^");
             }
             SovrascrivereFile(fileTemp, fileOrig);
 
