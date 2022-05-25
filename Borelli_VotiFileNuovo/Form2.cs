@@ -16,7 +16,8 @@ namespace Borelli_VotiFileNuovo
     public partial class Form2 : Form
     {
         string riga, nuovaClasse="";
-
+        public bool nuovaForm { get; set; }
+        public string indClasse { get; set; }
         public Form2()
         {
             InitializeComponent();
@@ -24,6 +25,7 @@ namespace Borelli_VotiFileNuovo
 
         private void Form2_Load(object sender, EventArgs e)
         {
+            nuovaForm = true;
             textBox1.Visible = false;
             button3.Visible = false;
             using (StreamWriter write = new StreamWriter(@"./tmp.txt", true)) { }
@@ -59,7 +61,12 @@ namespace Borelli_VotiFileNuovo
             button3.Visible = false;
             textBox1.Text = "";
         }
-
+        private void treeView1_DoubleClick(object sender, EventArgs e)
+        {
+            indClasse=OttieniIndiceFile(OttieniIndiceAlbero(treeView1.SelectedNode.Text, treeView1));
+            //MessageBox.Show(OttieniIndiceFile(OttieniIndiceAlbero(treeView1.SelectedNode.Text, treeView1)));
+            nuovaForm = false;
+        }
         public static void AggiuntaClasseFile(string fileTemp, string fileOrig, TreeView albero, string nuovoNumeroRiga, string nomeClasse)
         {
             string riga;
@@ -82,7 +89,15 @@ namespace Borelli_VotiFileNuovo
                 write.WriteLine("^");
             }
 
-            
+            using (StreamReader read = new StreamReader(fileOrig)) //copio tutto il resto
+            {
+                while((riga=read.ReadLine())!=null)
+                {
+                    using (StreamWriter write = new StreamWriter(fileTemp, true))
+                        write.WriteLine(riga);
+                } 
+            }
+
             SovrascrivereFile(fileTemp, fileOrig);
         }
 
@@ -137,11 +152,6 @@ namespace Borelli_VotiFileNuovo
                 }
             }
             return indice;
-        }
-
-        private void Form2_DoubleClick(object sender, EventArgs e)
-        {
-            //OttieniIndiceAlbero
         }
 
         public static string OttieniIndiceFile(int posizione) //mi aggiunge tutti gli zeri per salvarlo su file

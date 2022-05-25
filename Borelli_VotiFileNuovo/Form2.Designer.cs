@@ -41,6 +41,7 @@
             this.treeView1.Name = "treeView1";
             this.treeView1.Size = new System.Drawing.Size(256, 435);
             this.treeView1.TabIndex = 0;
+            this.treeView1.DoubleClick += new System.EventHandler(this.treeView1_DoubleClick);
             // 
             // button1
             // 
@@ -94,7 +95,6 @@
             this.Name = "Form2";
             this.Text = "Form2";
             this.Load += new System.EventHandler(this.Form2_Load);
-            this.DoubleClick += new System.EventHandler(this.Form2_DoubleClick);
             this.ResumeLayout(false);
             this.PerformLayout();
 
