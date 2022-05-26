@@ -51,7 +51,7 @@ namespace Borelli_VotiFileNuovo
         public static void EliminazioneInFile(string fileOrig, string fileTemp, TreeView albero, string indiceClasse)
         {
             int indAlbero = OttieniIndiceAlbero(albero.SelectedNode.Text, albero);
-
+            MessageBox.Show($"{indAlbero}");
             string riga;
 
             using (StreamWriter write = new StreamWriter(fileTemp)) { } //creo file temporaneo
@@ -60,8 +60,9 @@ namespace Borelli_VotiFileNuovo
             {
                 while ((riga = read.ReadLine()) != null) //continuo a copiare finche non arrivo al ^. Poi lo aggiungo
                 {
-                    if ((riga != "^" && riga != "/" && riga != "*") || riga.Length < 10) //se è un separatore oppure solo una classe, con indice e nome
+                    if (riga != "^" && riga != "/" && riga != "*" && riga.Length >= 10) //se è un separatore oppure solo una classe, con indice e nome
                     {
+                        MessageBox.Show($"RIGA ATTUALE: '{riga}' DA CERCARE: '{$"{indiceClasse}{OttieniIndiceFile(indAlbero)}"}'");
                         if (riga.Substring(0, 10) != $"{indiceClasse}{OttieniIndiceFile(indAlbero)}")
                         {
                             using (StreamWriter write = new StreamWriter(fileTemp, true))
@@ -84,13 +85,13 @@ namespace Borelli_VotiFileNuovo
         {
             string riga;
             int indice = 0;
-            bool condizione = true;
+            bool condizione = true, superateClassi=true;
             using (StreamReader read = new StreamReader(@"./tmp.txt"))
             {
                 while (condizione)
                 {
                     riga = read.ReadLine();
-                    if (riga.Length >= 10)
+                    if (!superateClassi)
                     {
                         riga = riga.Substring(10, riga.Length - 10);
 
@@ -99,7 +100,8 @@ namespace Borelli_VotiFileNuovo
                         else
                             indice++;
                     }
-                        
+                    if (riga == "^")
+                        superateClassi = false;  
                 }
             }
             return indice;
