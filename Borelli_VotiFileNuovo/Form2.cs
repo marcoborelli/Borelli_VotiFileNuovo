@@ -51,8 +51,9 @@ namespace Borelli_VotiFileNuovo
         }
         private void button3_Click(object sender, EventArgs e)//ok in aggiunta classe
         {
-            nuovaClasse += textBox1.Text.ToUpper();
-            string nuovaRiga = OttieniIndiceFile(treeView1.GetNodeCount(true));
+            nuovaClasse = textBox1.Text.ToUpper();
+            int nuovoIndice = TrovaIndiceLibero(@"./tmp.txt", treeView1);
+            string nuovaRiga = OttieniIndiceFile(nuovoIndice);
             //MessageBox.Show($"{OttieniIndiceFile(treeView1.GetNodeCount(true))}");
             //OttieniIndiceAlbero(,)
             AggiuntaClasseFile( @"./tmp1.txt", @"./tmp.txt",treeView1, nuovaRiga, nuovaClasse);
@@ -60,12 +61,39 @@ namespace Borelli_VotiFileNuovo
             textBox1.Visible = false;
             button3.Visible = false;
             textBox1.Text = "";
+           
         }
         private void treeView1_DoubleClick(object sender, EventArgs e)
         {
             indClasse=OttieniIndiceFile(OttieniIndiceAlbero(treeView1.SelectedNode.Text, treeView1));
             //MessageBox.Show(OttieniIndiceFile(OttieniIndiceAlbero(treeView1.SelectedNode.Text, treeView1)));
             nuovaForm = false;
+        }
+
+        public static int TrovaIndiceLibero(string posizioneOriginale, TreeView albero)
+        {
+            bool cond = true;
+            string rigaa;
+            int nRiga = 0, contatore = 0;
+            using (StreamReader read = new StreamReader(@"./tmp.txt"))
+            {
+                while (cond)
+                {
+                    rigaa = read.ReadLine();
+                    if (rigaa != "^")
+                    {
+                        rigaa = rigaa.Substring(0, 5);
+                        if ((contatore != 0) && (int.Parse(rigaa) != nRiga + 1))//se la nuova riga già convertita non è maggiore di uno allora c'è un bugo
+                            return int.Parse(rigaa)-1;//-1 perchè questo è già quello aumntato quello prima è quello diminuito quindi sta nel mezzo
+                        nRiga = int.Parse(rigaa);
+                        contatore++;
+                    }
+                    else
+                        cond = false;
+                }
+                return albero.GetNodeCount(true);//se non trova nulla ritorno il primo numero in ordine dipsonibile
+
+            }
         }
         public static void AggiuntaClasseFile(string fileTemp, string fileOrig, TreeView albero, string nuovoNumeroRiga, string nomeClasse)
         {
@@ -82,20 +110,15 @@ namespace Borelli_VotiFileNuovo
                     using (StreamWriter write = new StreamWriter(fileTemp, true))
                         write.WriteLine(riga);
                 } //mi fermo a scrivere l'indice prima di inserire il nuovo
-            }
-            using (StreamWriter write = new StreamWriter(fileTemp, true))
-            {
-                write.WriteLine($"{nuovoNumeroRiga} {nomeClasse}"); //scrivo il nuovo e poi chiudo
-                write.WriteLine("^");
-            }
 
-            using (StreamReader read = new StreamReader(fileOrig)) //copio tutto il resto
-            {
-                while((riga=read.ReadLine())!=null)
+                using (StreamWriter write = new StreamWriter(fileTemp, true))
+                    write.WriteLine($"{nuovoNumeroRiga} {nomeClasse}"); //scrivo il nuovo e poi chiudo
+
+                while ((riga = read.ReadLine()) != null)
                 {
                     using (StreamWriter write = new StreamWriter(fileTemp, true))
                         write.WriteLine(riga);
-                } 
+                }
             }
 
             SovrascrivereFile(fileTemp, fileOrig);
