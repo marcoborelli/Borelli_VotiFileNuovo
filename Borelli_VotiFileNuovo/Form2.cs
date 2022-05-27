@@ -52,11 +52,13 @@ namespace Borelli_VotiFileNuovo
         private void button3_Click(object sender, EventArgs e)//ok in aggiunta classe
         {
             nuovaClasse = textBox1.Text.ToUpper();
-            int nuovoIndice = TrovaIndiceLibero(@"./tmp.txt", treeView1);
+            int posizionePrimaLibera = 0, nuovoIndice = 0;
+            TrovaIndiceLibero(@"./tmp.txt", treeView1, ref nuovoIndice, ref posizionePrimaLibera);
             string nuovaRiga = OttieniIndiceFile(nuovoIndice);
+            string posizionePrimaDellaLibera = OttieniIndiceFile(posizionePrimaLibera);
             //MessageBox.Show($"{OttieniIndiceFile(treeView1.GetNodeCount(true))}");
             //OttieniIndiceAlbero(,)
-            AggiuntaClasseFile( @"./tmp1.txt", @"./tmp.txt",treeView1, nuovaRiga, nuovaClasse);
+            AggiuntaClasseFile( @"./tmp1.txt", @"./tmp.txt",treeView1, nuovaRiga, nuovaClasse, posizionePrimaDellaLibera);
             treeView1.Nodes.Add(nuovaClasse);
             textBox1.Visible = false;
             button3.Visible = false;
@@ -70,7 +72,7 @@ namespace Borelli_VotiFileNuovo
             nuovaForm = false;
         }
 
-        public static int TrovaIndiceLibero(string posizioneOriginale, TreeView albero)
+        public static void TrovaIndiceLibero(string posizioneOriginale, TreeView albero, ref int posizioneLiber, ref int posizionePrimaDellaLibera)
         {
             bool cond = true;
             string rigaa;
@@ -83,36 +85,48 @@ namespace Borelli_VotiFileNuovo
                     if (rigaa != "^")
                     {
                         rigaa = rigaa.Substring(0, 5);
+                        MessageBox.Show(rigaa);
                         if ((contatore != 0) && (int.Parse(rigaa) != nRiga + 1))//se la nuova riga già convertita non è maggiore di uno allora c'è un bugo
-                            return int.Parse(rigaa)-1;//-1 perchè questo è già quello aumntato quello prima è quello diminuito quindi sta nel mezzo
+                        {
+                            posizionePrimaDellaLibera = nRiga;
+                            posizioneLiber = int.Parse(rigaa) - 1;
+                            return;
+                        }
                         nRiga = int.Parse(rigaa);
                         contatore++;
                     }
                     else
                         cond = false;
                 }
-                return albero.GetNodeCount(true);//se non trova nulla ritorno il primo numero in ordine dipsonibile
+                posizionePrimaDellaLibera = nRiga;
+                posizioneLiber = albero.GetNodeCount(true);
+                return;//se non trova nulla ritorno il primo numero in ordine dipsonibile
 
             }
         }
-        public static void AggiuntaClasseFile(string fileTemp, string fileOrig, TreeView albero, string nuovoNumeroRiga, string nomeClasse)
+        public static void AggiuntaClasseFile(string fileTemp, string fileOrig, TreeView albero, string nuovoNumeroRiga, string nomeClasse, string posizionePrimaDellaLibera)
         {
-            string riga;
+            string riga, rigaCompleta="";
             using (StreamWriter write = new StreamWriter(fileTemp)) { }
             using (StreamReader read = new StreamReader(fileOrig))
             {
-                nuovoNumeroRiga = nuovoNumeroRiga.Substring(0, 5);
-                int numRiga = Convert.ToInt16(nuovoNumeroRiga);
+                //nuovoNumeroRiga = nuovoNumeroRiga.Substring(0, 5);
+                //int numRiga = Convert.ToInt16(nuovoNumeroRiga);
 
-                for (int i=0;i< numRiga; i++)
+                while ((riga = read.ReadLine().Substring(0,5)) != posizionePrimaDellaLibera)
                 {
-                    riga = read.ReadLine();
+                    rigaCompleta = read.ReadLine();
+                    MessageBox.Show($"POSIZIONE LIBERA: '{posizionePrimaDellaLibera}' MIA POSIZIONE: '{riga}'");
                     using (StreamWriter write = new StreamWriter(fileTemp, true))
-                        write.WriteLine(riga);
+                        write.WriteLine(rigaCompleta);
                 } //mi fermo a scrivere l'indice prima di inserire il nuovo
 
                 using (StreamWriter write = new StreamWriter(fileTemp, true))
+                {
+                    write.WriteLine(rigaCompleta);
                     write.WriteLine($"{nuovoNumeroRiga} {nomeClasse}"); //scrivo il nuovo e poi chiudo
+                }
+                    
 
                 while ((riga = read.ReadLine()) != null)
                 {
