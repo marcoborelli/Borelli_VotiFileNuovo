@@ -43,6 +43,7 @@
             this.button3.TabIndex = 9;
             this.button3.Text = "OK";
             this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
             // textBox1
             // 
@@ -59,6 +60,7 @@
             this.button2.TabIndex = 7;
             this.button2.Text = "AGGIUNGI ALUNNO";
             this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
             // button1
             // 

@@ -14,7 +14,7 @@ namespace Borelli_VotiFileNuovo
     public partial class Form3 : Form
     {
         public string indiceClasse { get; set; }
-        string riga;
+        string riga, nuovoAlunno;
         bool primaParte;
         public Form3()
         {
@@ -74,7 +74,6 @@ namespace Borelli_VotiFileNuovo
                         using (StreamWriter write = new StreamWriter(fileTemp, true))
                             write.WriteLine(riga);
                     }
-
                 }
             }
             SovrascrivereFile(fileTemp, fileOrig);
@@ -85,7 +84,7 @@ namespace Borelli_VotiFileNuovo
         {
             string riga;
             int indice = 0;
-            bool condizione = true, superateClassi=true;
+            bool condizione = true, superateClassi = true;
             using (StreamReader read = new StreamReader(@"./tmp.txt"))
             {
                 while (condizione)
@@ -101,7 +100,7 @@ namespace Borelli_VotiFileNuovo
                             indice++;
                     }
                     if (riga == "^")
-                        superateClassi = false;  
+                        superateClassi = false;
                 }
             }
             return indice;
@@ -128,6 +127,71 @@ namespace Borelli_VotiFileNuovo
             newFi.Delete();
             newFi = fi.CopyTo(fileOrig);
             fi.Delete();
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            textBox1.Visible = true;
+            button3.Visible = true;
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            nuovoAlunno = textBox1.Text.ToUpper();
+            string nuovaRiga = indiceClasse, posizionePrimaDellaLibera = indiceClasse;
+            int posizionePrimaLibera = 0, nuovoIndice = 0;
+            TrovaIndiceLibero(@"./tmp.txt", treeView1, ref nuovoIndice, ref posizionePrimaLibera, indiceClasse);
+
+            nuovaRiga += OttieniIndiceFile(nuovoIndice);
+            posizionePrimaDellaLibera += OttieniIndiceFile(posizionePrimaLibera);
+            MessageBox.Show($"INDICE LIBERO: '{nuovaRiga}'\nINDICE CHE LO PRECEDE: {posizionePrimaDellaLibera}'");
+
+            //AggiuntaAlunnoFile(@"./tmp1.txt", @"./tmp.txt", treeView1, nuovaRiga, nuovoAlunno, posizionePrimaDellaLibera);
+        }
+
+        public static void TrovaIndiceLibero(string posizioneOriginale, TreeView albero, ref int posizioneLiber, ref int posizionePrimaDellaLibera, string indiceClasse)
+        {
+            bool cond = true, superateClassi = true;
+            string rigaa, individuaClasse;
+            int nRiga = 0, contatore = 0;
+            using (StreamReader read = new StreamReader(@"./tmp.txt"))
+            {
+                while (cond)
+                {
+                    rigaa = read.ReadLine();
+                    if (!superateClassi)
+                    {
+                        if (rigaa != "/")//separatore tra alunni e materie
+                        {
+                            individuaClasse = rigaa.Substring(0, 5);
+                            if (individuaClasse == indiceClasse) //se appartiene alla stessa classe
+                            {
+                                rigaa = rigaa.Substring(5, 5); //parto dal 5 (quelli prima sono ola classe) e prendo i 5 che lo seguono
+                                MessageBox.Show(rigaa);
+                                if ((contatore != 0) && (int.Parse(rigaa) != nRiga + 1))//se la nuova riga già convertita non è maggiore di uno allora c'è un bugo
+                                {
+                                    posizionePrimaDellaLibera = nRiga;
+                                    posizioneLiber = int.Parse(rigaa) - 1;
+                                    return;
+                                }
+                                nRiga = int.Parse(rigaa);
+                                contatore++;
+                            }
+                        }
+                        else
+                            cond = false;
+
+                    }
+
+                    if (rigaa == "^")
+                        superateClassi = false;
+
+                }
+                posizionePrimaDellaLibera = nRiga;
+                posizioneLiber = albero.GetNodeCount(true);
+                return;//se non trova nulla ritorno il primo numero in ordine dipsonibile
+
+            }
         }
     }
 }

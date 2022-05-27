@@ -184,7 +184,7 @@ namespace Borelli_VotiFileNuovo
 
         }
 
-        public static int OttieniIndiceAlbero(string nome, TreeView albero)
+        public static int OttieniIndiceAlbero(string nome, TreeView albero) //serve per trovare l'indice dell'elemento basandomi sulla posizione che hanno nel file txt
         {
             string riga;
             int indice = 0;
