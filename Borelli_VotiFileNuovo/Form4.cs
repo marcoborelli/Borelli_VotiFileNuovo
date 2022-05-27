@@ -12,9 +12,15 @@ namespace Borelli_VotiFileNuovo
 {
     public partial class Form4 : Form
     {
+        public string indClasseAlunno { get; set; }
         public Form4()
         {
             InitializeComponent();
+        }
+
+        private void Form4_Load(object sender, EventArgs e)
+        {
+            MessageBox.Show(indClasseAlunno);
         }
     }
 }

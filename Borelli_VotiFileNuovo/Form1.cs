@@ -12,7 +12,7 @@ namespace Borelli_VotiFileNuovo
 {
     public partial class Form1 : Form
     {
-        bool nuovaForm3;
+        bool nuovaForm3, nuovaForm4;
         Form2 SelezioneClassi = new Form2();
         Form3 SelezioneAlunno = new Form3();
         Form4 SelezioneMateria = new Form4();
@@ -42,6 +42,16 @@ namespace Borelli_VotiFileNuovo
                 panel2.Controls.Add(SelezioneAlunno);
                 SelezioneAlunno.indiceClasse = SelezioneClassi.indClasse; //mi passo l'indice della classe
                 SelezioneAlunno.Show();
+
+                nuovaForm4 = SelezioneAlunno.nuovaForm3;
+                if (!nuovaForm4)
+                {
+                    SelezioneMateria.TopLevel = false;
+                    SelezioneMateria.TopMost = true;
+                    panel3.Controls.Add(SelezioneMateria);
+                    SelezioneMateria.indClasseAlunno = SelezioneClassi.indClasse + SelezioneAlunno.indClasse3;
+                    SelezioneMateria.Show();
+                }
             }
 
         }
