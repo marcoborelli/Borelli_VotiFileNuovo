@@ -162,7 +162,7 @@ namespace Borelli_VotiFileNuovo
             {
                 while ((riga = read.ReadLine()) !=null) //continuo a copiare finche non arrivo al ^. Poi lo aggiungo
                 {
-                    if (riga != "^" && riga != "/" && riga != "*") //se è un carattere non posso fare substring, quindi sapendo che sono minimo 5 lo copio e stop
+                    if (riga != "^" && riga != "/" && riga != "*" && riga != "+") //se è un carattere non posso fare substring, quindi sapendo che sono minimo 5 lo copio e stop
                     {
                         if (riga.Substring(0, 5) != OttieniIndiceFile(OttieniIndiceAlbero(albero.SelectedNode.Text, albero)))
                         {

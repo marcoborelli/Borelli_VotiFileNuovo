@@ -122,9 +122,9 @@ namespace Borelli_VotiFileNuovo
             {
                 while ((riga = read.ReadLine()) != null) //continuo a copiare finche non arrivo al ^. Poi lo aggiungo
                 {
-                    if (riga != "^" && riga != "/" && riga != "*" && riga.Length >= 10) //se è un separatore oppure solo una classe, con indice e nome
+                    if (riga != "^" && riga != "/" && riga != "*" && riga != "+" && riga.Length >= 10) //se è un separatore oppure solo una classe, con indice e nome
                     {
-                        MessageBox.Show($"RIGA ATTUALE: '{riga}' DA CERCARE: '{$"{indiceClasse}{OttieniIndiceFile(indAlbero)}"}'");
+                        //MessageBox.Show($"RIGA ATTUALE: '{riga}' DA CERCARE: '{$"{indiceClasse}{OttieniIndiceFile(indAlbero)}"}'");
                         if (riga.Substring(0, 10) != $"{indiceClasse}{OttieniIndiceFile(indAlbero)}")
                         {
                             using (StreamWriter write = new StreamWriter(fileTemp, true))

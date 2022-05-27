@@ -7,12 +7,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.IO;
 
 namespace Borelli_VotiFileNuovo
 {
     public partial class Form4 : Form
     {
         public string indClasseAlunno { get; set; }
+        string riga;
+        bool secondaParte=true;
         public Form4()
         {
             InitializeComponent();
@@ -20,7 +23,23 @@ namespace Borelli_VotiFileNuovo
 
         private void Form4_Load(object sender, EventArgs e)
         {
-            MessageBox.Show(indClasseAlunno);
+            //MessageBox.Show(indClasseAlunno);
+            textBox1.Visible = false;
+            button3.Visible = false;
+
+            using (StreamReader read = new StreamReader(@"./tmp.txt"))
+            {
+                while ((riga = read.ReadLine()) != "+" && riga != null) //^=fine prima parte /=fine seconda parte +=fine terza parte
+                {
+                    if (!secondaParte)
+                    {
+                        if (riga.Substring(0, 10) == indClasseAlunno && riga.Length >= 10)
+                            treeView1.Nodes.Add(riga.Substring(15, riga.Length - 15));
+                    }
+                    if (riga == "/")
+                        secondaParte = false;
+                }
+            }
         }
     }
 }
