@@ -107,23 +107,28 @@ namespace Borelli_VotiFileNuovo
         public static void AggiuntaClasseFile(string fileTemp, string fileOrig, TreeView albero, string nuovoNumeroRiga, string nomeClasse, string posizionePrimaDellaLibera)
         {
             string riga, rigaCompleta="";
+            bool condizione = true;
             using (StreamWriter write = new StreamWriter(fileTemp)) { }
             using (StreamReader read = new StreamReader(fileOrig))
             {
                 //nuovoNumeroRiga = nuovoNumeroRiga.Substring(0, 5);
                 //int numRiga = Convert.ToInt16(nuovoNumeroRiga);
 
-                while ((riga = read.ReadLine().Substring(0,5)) != posizionePrimaDellaLibera)
+                while (condizione)
                 {
                     rigaCompleta = read.ReadLine();
-                    MessageBox.Show($"POSIZIONE LIBERA: '{posizionePrimaDellaLibera}' MIA POSIZIONE: '{riga}'");
+                    riga = rigaCompleta.Substring(0, 5);
+                    //MessageBox.Show($"POSIZIONE PRIMA DELLA LIBERA: '{posizionePrimaDellaLibera}' MIA POSIZIONE: '{riga}'");
                     using (StreamWriter write = new StreamWriter(fileTemp, true))
                         write.WriteLine(rigaCompleta);
+
+                    if (riga == posizionePrimaDellaLibera)
+                        condizione = false;
                 } //mi fermo a scrivere l'indice prima di inserire il nuovo
 
                 using (StreamWriter write = new StreamWriter(fileTemp, true))
                 {
-                    write.WriteLine(rigaCompleta);
+                    //write.WriteLine(rigaCompleta);
                     write.WriteLine($"{nuovoNumeroRiga} {nomeClasse}"); //scrivo il nuovo e poi chiudo
                 }
                     
