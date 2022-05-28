@@ -68,7 +68,6 @@ namespace Borelli_VotiFileNuovo
         private void treeView1_DoubleClick(object sender, EventArgs e)
         {
             indClasse=OttieniIndiceFile(OttieniIndiceAlbero(treeView1.SelectedNode.Text, treeView1));
-            //MessageBox.Show(OttieniIndiceFile(OttieniIndiceAlbero(treeView1.SelectedNode.Text, treeView1)));
             nuovaForm = false;
         }
 

@@ -43,6 +43,7 @@
             this.button3.TabIndex = 14;
             this.button3.Text = "OK";
             this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
             // textBox1
             // 
@@ -59,6 +60,7 @@
             this.button2.TabIndex = 12;
             this.button2.Text = "AGGIUNGI MATERIA";
             this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
             // button1
             // 
@@ -68,6 +70,7 @@
             this.button1.TabIndex = 11;
             this.button1.Text = "ELIMINA MATERIA";
             this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // treeView1
             // 

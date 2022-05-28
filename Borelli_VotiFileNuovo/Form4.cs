@@ -41,5 +41,20 @@ namespace Borelli_VotiFileNuovo
                 }
             }
         }
+
+        private void button1_Click(object sender, EventArgs e) //elimina materia
+        {
+
+        }
+
+        private void button2_Click(object sender, EventArgs e)//aggiungi materia
+        {
+
+        }
+
+        private void button3_Click(object sender, EventArgs e)//tasto ok in aggiungi materia
+        {
+
+        }
     }
 }

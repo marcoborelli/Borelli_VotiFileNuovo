@@ -17,7 +17,7 @@ namespace Borelli_VotiFileNuovo
         public string indClasse3 { get; set; }
         public bool nuovaForm3 { get; set; }
         string riga, nuovoAlunno;
-        bool primaParte= true;
+        bool primaParte = true;
         public Form3()
         {
             InitializeComponent();
@@ -144,8 +144,8 @@ namespace Borelli_VotiFileNuovo
 
         public static int OttieniIndiceAlbero(string nome, TreeView albero)
         {
-            string riga;
-            int indice = 0;
+            string riga, rigaClasse;
+            int indice = 0, indClasse = 0;
             bool condizione = true, superateClassi = true;
             using (StreamReader read = new StreamReader(@"./tmp.txt"))
             {
@@ -154,12 +154,20 @@ namespace Borelli_VotiFileNuovo
                     riga = read.ReadLine();
                     if (!superateClassi)
                     {
+                        rigaClasse = riga.Substring(0, 5);
                         riga = riga.Substring(10, riga.Length - 10);
+
+                        //MessageBox.Show($"RIGA CLASSE: {rigaClasse}");
+
+                        if ((indice > 0) && int.Parse(rigaClasse) != indClasse) //quando cambio classe l'indice mi torna pari a 0
+                            indice = 0;
 
                         if (riga == nome)
                             condizione = false;
                         else
                             indice++;
+
+                        indClasse = int.Parse(rigaClasse);
                     }
                     if (riga == "^")
                         superateClassi = false;
