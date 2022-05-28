@@ -152,13 +152,12 @@ namespace Borelli_VotiFileNuovo
                 while (condizione)
                 {
                     riga = read.ReadLine();
+                    
                     if (!superateClassi)
                     {
                         rigaClasse = riga.Substring(0, 5);
                         riga = riga.Substring(10, riga.Length - 10);
-
-                        //MessageBox.Show($"RIGA CLASSE: {rigaClasse}");
-
+                        //MessageBox.Show($"RIGA: '{riga}' NOME:'{nome}'");
                         if ((indice > 0) && int.Parse(rigaClasse) != indClasse) //quando cambio classe l'indice mi torna pari a 0
                             indice = 0;
 

@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+
 namespace Borelli_VotiFileNuovo
 {
     public partial class Form1 : Form
@@ -31,7 +32,6 @@ namespace Borelli_VotiFileNuovo
             SelezioneClassi.Show();
 
         }
-
         private void timer1_Tick(object sender, EventArgs e)
         {
             nuovaForm3 = SelezioneClassi.nuovaForm; //bool che permette di caricare la finestra degli alunni
