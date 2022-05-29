@@ -14,8 +14,8 @@ namespace Borelli_VotiFileNuovo
     public partial class Form4 : Form
     {
         public string indClasseAlunno { get; set; }
-        string riga;
-        bool secondaParte=true;
+        string riga, nuovaMateria;
+        bool secondaParte = true;
         public Form4()
         {
             InitializeComponent();
@@ -50,12 +50,127 @@ namespace Borelli_VotiFileNuovo
 
         private void button2_Click(object sender, EventArgs e)//aggiungi materia
         {
-
+            textBox1.Visible = true;
+            button3.Visible = true;
         }
 
         private void button3_Click(object sender, EventArgs e)//tasto ok in aggiungi materia
         {
+            nuovaMateria = textBox1.Text.ToUpper();
+            string indiceCLasseAlunnoPrima = "";
+            int posizionePrimaLibera = 0, nuovoIndice = 0;
+            //MessageBox.Show($"TOTALE: '{indClasseAlunno}'\n'{indClasseAlunno.Substring(0, 5)}'\n'{indClasseAlunno.Substring(5, indClasseAlunno.Length-5)}' ");
+            TrovaIndiceLibero(@"./tmp.txt", treeView1, ref nuovoIndice, ref posizionePrimaLibera, indClasseAlunno.Substring(0, 5), indClasseAlunno.Substring(5, indClasseAlunno.Length - 5), ref indiceCLasseAlunnoPrima);
 
+            string nuovaRiga = indClasseAlunno, posizionePrimaDellaLibera = indiceCLasseAlunnoPrima;
+
+            nuovaRiga += OttieniIndiceFile(nuovoIndice);
+            posizionePrimaDellaLibera += OttieniIndiceFile(posizionePrimaLibera);
+            MessageBox.Show($"INDICE LIBERO: '{nuovaRiga}'\nINDICE CHE LO PRECEDE: {posizionePrimaDellaLibera}'");
+
+            AggiuntaMateriaFile(@"./tmp1.txt", @"./tmp.txt", treeView1, nuovaRiga, nuovaMateria, posizionePrimaDellaLibera);
+
+            treeView1.Nodes.Add(nuovaMateria);
+            textBox1.Visible = false;
+            button3.Visible = false;
+            textBox1.Text = "";
+        }
+
+        public static void AggiuntaMateriaFile(string fileTemp, string fileOrig, TreeView albero, string nuovoNumeroRiga, string nomeClasse, string posizionePrimaDellaLibera)
+        {
+            string riga, rigaCompleta = "";
+            bool condizione = true, superateClassi = true;
+            using (StreamWriter write = new StreamWriter(fileTemp)) { }
+            using (StreamReader read = new StreamReader(fileOrig))
+            {
+                while (condizione)
+                {
+                    rigaCompleta = read.ReadLine();
+                    if (!superateClassi)
+                    {
+                        riga = rigaCompleta.Substring(0, 15);
+                        if (riga == posizionePrimaDellaLibera)
+                            condizione = false;
+                    }
+
+                    using (StreamWriter write = new StreamWriter(fileTemp, true))
+                        write.WriteLine(rigaCompleta);
+
+                    if (rigaCompleta == "/")
+                        superateClassi = false;
+
+                } //mi fermo a scrivere l'indice prima di inserire il nuovo
+
+                using (StreamWriter write = new StreamWriter(fileTemp, true))
+                    write.WriteLine($"{nuovoNumeroRiga} {nomeClasse}"); //scrivo il nuovo e poi chiudo
+
+                while ((riga = read.ReadLine()) != null)
+                {
+                    using (StreamWriter write = new StreamWriter(fileTemp, true))
+                        write.WriteLine(riga);
+                }
+            }
+
+            SovrascrivereFile(fileTemp, fileOrig);
+        }
+        public static void TrovaIndiceLibero(string posizioneOriginale, TreeView albero, ref int posizioneLiber, ref int posizionePrimaDellaLibera, string indiceClasse, string indiceAlunno, ref string indiceClasseAlunnoPrima)
+        {
+            bool cond = true, superateClassi = true, entratoInCiclo = true;
+            string rigaa = "", individuaClasse, cicloClasseNuova, cicloInternoClasseNuova = "", individuaAlunno;
+            int nRiga = 0, contatore = 0;
+            indiceClasseAlunnoPrima = indiceClasse + indiceAlunno; //di default sono questi
+            using (StreamReader read = new StreamReader(posizioneOriginale))
+            {
+                while (cond)
+                {
+                    rigaa = read.ReadLine();
+                    if (!superateClassi)
+                    {
+                        if (rigaa != "+")//separatore tra alunni e materie
+                        {
+                            individuaClasse = rigaa.Substring(0, 5);
+                            individuaAlunno = rigaa.Substring(5, 5); //parto dal 5 (quelli prima sono ola classe) e prendo i 5 che lo seguono
+                            MessageBox.Show($"INDICE CLASSE: '{individuaClasse}'\nINDICE ALUNNO: '{individuaAlunno}'");
+                            if (individuaClasse == indiceClasse && individuaAlunno == indiceAlunno) //se appartiene alla stessa classe ed è lo stesso alunno
+                            {
+                                rigaa = rigaa.Substring(10, 5);
+                                entratoInCiclo = false;
+                                if ((contatore != 0) && (int.Parse(rigaa) != nRiga + 1))//se la nuova riga già convertita non è maggiore di uno allora c'è un bugo
+                                {
+                                    posizionePrimaDellaLibera = nRiga;
+                                    posizioneLiber = int.Parse(rigaa) - 1;
+                                    return;
+                                }
+                                nRiga = int.Parse(rigaa);
+                                contatore++;
+                            }
+                        }
+                        else
+                            cond = false;
+                    }
+
+                    if (rigaa == "/")
+                        superateClassi = false;
+                }
+            }
+
+            if (!entratoInCiclo)
+                posizionePrimaDellaLibera = nRiga;
+            else
+            {
+                using (StreamReader read = new StreamReader(posizioneOriginale))
+                {
+                    while ((cicloClasseNuova = read.ReadLine()) != "+") //predo stringa prima della fine delle materie 
+                        cicloInternoClasseNuova = cicloClasseNuova;
+                }
+
+                indiceClasseAlunnoPrima = cicloInternoClasseNuova.Substring(0, 10); //la nuova classe che precede
+                posizionePrimaDellaLibera = int.Parse(cicloInternoClasseNuova.Substring(10, 5)); //l'indice della classe
+            }
+
+
+            posizioneLiber = albero.GetNodeCount(true);
+            return;//se non trova nulla ritorno il primo numero in ordine dipsonibile
         }
 
         public static void EliminazioneInFile(string fileOrig, string fileTemp, TreeView albero, string indiceClasseAlunno)
@@ -108,7 +223,7 @@ namespace Borelli_VotiFileNuovo
 
                         MessageBox.Show($"RIGA CLASSE: '{rigaClasse}'\nRIGA ALUNNO: '{rigaAlunno}'");
 
-                        if ((indice > 0) && (int.Parse(rigaClasse)+ int.Parse(rigaAlunno)) != indClasseAlunno) //quando cambio classe l'indice mi torna pari a 0
+                        if ((indice > 0) && (int.Parse(rigaClasse) + int.Parse(rigaAlunno)) != indClasseAlunno) //quando cambio classe l'indice mi torna pari a 0
                             indice = 0;
 
                         if (riga == nome)
@@ -116,7 +231,7 @@ namespace Borelli_VotiFileNuovo
                         else
                             indice++;
 
-                        indClasseAlunno = int.Parse(rigaClasse)+ int.Parse(rigaAlunno);
+                        indClasseAlunno = int.Parse(rigaClasse) + int.Parse(rigaAlunno);
                     }
                     if (riga == "/")
                         superateClassi = false;
@@ -149,6 +264,6 @@ namespace Borelli_VotiFileNuovo
             return "-1";
         }
 
-        
+
     }
 }

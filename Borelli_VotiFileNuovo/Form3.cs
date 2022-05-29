@@ -51,6 +51,11 @@ namespace Borelli_VotiFileNuovo
             EliminazioneInFile(@"./tmp.txt", @"./tmp1.txt", treeView1, indiceClasse);
             treeView1.SelectedNode.Remove();
         }
+        private void button2_Click(object sender, EventArgs e)  //aggiungi alunno
+        {
+            textBox1.Visible = true;
+            button3.Visible = true;
+        }
         private void button3_Click(object sender, EventArgs e) //ok in aggiungi alunno
         {
             nuovoAlunno = textBox1.Text.ToUpper();
@@ -152,17 +157,20 @@ namespace Borelli_VotiFileNuovo
                 while (condizione)
                 {
                     riga = read.ReadLine();
-                    
                     if (!superateClassi)
                     {
                         rigaClasse = riga.Substring(0, 5);
                         riga = riga.Substring(10, riga.Length - 10);
+                        MessageBox.Show($"RIGA CLASSE: '{rigaClasse}'\nNOME DA CERCARE: '{nome}' \nNOME IN FILE: '{riga}'");
                         //MessageBox.Show($"RIGA: '{riga}' NOME:'{nome}'");
                         if ((indice > 0) && int.Parse(rigaClasse) != indClasse) //quando cambio classe l'indice mi torna pari a 0
                             indice = 0;
 
                         if (riga == nome)
+                        {
                             condizione = false;
+                            MessageBox.Show("SONO DENTRO r.172");
+                        }
                         else
                             indice++;
 
@@ -197,13 +205,6 @@ namespace Borelli_VotiFileNuovo
             newFi = fi.CopyTo(fileOrig);
             fi.Delete();
         }
-
-        private void button2_Click(object sender, EventArgs e)
-        {
-            textBox1.Visible = true;
-            button3.Visible = true;
-        }
-
         private void treeView1_DoubleClick(object sender, EventArgs e)
         {
             indClasse3 = OttieniIndiceFile(OttieniIndiceAlbero(treeView1.SelectedNode.Text, treeView1));
