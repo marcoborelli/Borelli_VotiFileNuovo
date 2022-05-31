@@ -80,7 +80,7 @@
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
             this.Name = "Form1";
-            this.Text = "Form1";
+            this.Text = "Voti";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.ResumeLayout(false);
 

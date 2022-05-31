@@ -14,6 +14,8 @@ namespace Borelli_VotiFileNuovo
     public partial class Form4 : Form
     {
         public string indClasseAlunno { get; set; }
+        public string indAlunno4 { get; set; }
+        public bool passatoDa4 { get; set; }
         string riga, nuovaMateria;
         bool secondaParte = true;
         public Form4()
@@ -23,6 +25,7 @@ namespace Borelli_VotiFileNuovo
 
         private void Form4_Load(object sender, EventArgs e)
         {
+            passatoDa4 = true;
             //MessageBox.Show(indClasseAlunno);
             textBox1.Visible = false;
             button3.Visible = false;
@@ -74,6 +77,11 @@ namespace Borelli_VotiFileNuovo
             textBox1.Visible = false;
             button3.Visible = false;
             textBox1.Text = "";
+        }
+        private void treeView1_DoubleClick(object sender, EventArgs e)
+        {
+            indAlunno4 = OttieniIndiceFile(OttieniIndiceAlbero(treeView1.SelectedNode.Text, treeView1));
+            passatoDa4 = false;
         }
 
         public static void AggiuntaMateriaFile(string fileTemp, string fileOrig, TreeView albero, string nuovoNumeroRiga, string nomeClasse, string posizionePrimaDellaLibera)

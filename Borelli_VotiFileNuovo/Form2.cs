@@ -36,9 +36,6 @@ namespace Borelli_VotiFileNuovo
                     treeView1.Nodes.Add(riga.Substring(5, riga.Length - 5));
             }
         }
-
-       
-
         private void button1_Click(object sender, EventArgs e) //rimuovi classe
         {
             EliminazioneInFile(@"./tmp.txt", @"./tmp1.txt", treeView1);
@@ -203,7 +200,6 @@ namespace Borelli_VotiFileNuovo
             }
             return indice;
         }
-
         public static string OttieniIndiceFile(int posizione) //mi aggiunge tutti gli zeri per salvarlo su file
         {
             string pos = posizione.ToString();

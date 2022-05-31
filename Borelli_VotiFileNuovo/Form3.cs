@@ -56,6 +56,12 @@ namespace Borelli_VotiFileNuovo
             textBox1.Visible = true;
             button3.Visible = true;
         }
+        private void treeView1_DoubleClick(object sender, EventArgs e)
+        {
+            indClasse3 = OttieniIndiceFile(OttieniIndiceAlbero(treeView1.SelectedNode.Text, treeView1));
+            //MessageBox.Show(OttieniIndiceFile(OttieniIndiceAlbero(treeView1.SelectedNode.Text, treeView1)));
+            nuovaForm3 = false;
+        }
         private void button3_Click(object sender, EventArgs e) //ok in aggiungi alunno
         {
             nuovoAlunno = textBox1.Text.ToUpper();
@@ -204,12 +210,6 @@ namespace Borelli_VotiFileNuovo
             newFi.Delete();
             newFi = fi.CopyTo(fileOrig);
             fi.Delete();
-        }
-        private void treeView1_DoubleClick(object sender, EventArgs e)
-        {
-            indClasse3 = OttieniIndiceFile(OttieniIndiceAlbero(treeView1.SelectedNode.Text, treeView1));
-            //MessageBox.Show(OttieniIndiceFile(OttieniIndiceAlbero(treeView1.SelectedNode.Text, treeView1)));
-            nuovaForm3 = false;
         }
 
         public static void TrovaIndiceLibero(string posizioneOriginale, TreeView albero, ref int posizioneLiber, ref int posizionePrimaDellaLibera, string indiceClasse, ref string indiceClassePrima)
