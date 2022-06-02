@@ -184,7 +184,7 @@ namespace Borelli_VotiFileNuovo
         public static void EliminazioneInFile(string fileOrig, string fileTemp, TreeView albero, string indiceClasseAlunno)
         {
             int indAlbero = OttieniIndiceAlbero(albero.SelectedNode.Text, albero);
-            MessageBox.Show($"{indAlbero}");
+            //MessageBox.Show($"{indAlbero}");
             string riga;
 
             using (StreamWriter write = new StreamWriter(fileTemp)) { } //creo file temporaneo

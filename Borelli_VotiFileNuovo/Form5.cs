@@ -47,15 +47,15 @@ namespace Borelli_VotiFileNuovo
 
             dataGridView1.DataSource = tabella;
             dataGridView1.AllowUserToAddRows = false;
+            dataGridView1.Columns[0].ReadOnly = true;
+            dataGridView1.Columns[1].ReadOnly = true;
 
         }
 
         private void button1_Click(object sender, EventArgs e) //elimina voto
         {
-            int i = dataGridView1.CurrentCell.RowIndex;
-            tabella.Rows.RemoveAt(i);
-            //DataRow ciao = new DataRow(45);
-            //dataGridView1.Dele
+            EliminazioneInFile(@"./tmp.txt", @"./tmp1.txt", dataGridView1, indClasseAlunnoMateria);
+            tabella.Rows.RemoveAt(dataGridView1.CurrentCell.RowIndex);
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -71,6 +71,60 @@ namespace Borelli_VotiFileNuovo
 
             tabella.Rows.Add(textBox1.Text, heloo);
             //MessageBox.Show(heloo);
+        }
+
+        public static void EliminazioneInFile(string fileOrig, string fileTemp, DataGridView dati, string indClasseAlunnoMateria)
+        {
+            int indTabella = dati.CurrentCell.RowIndex;
+            string indTabellaStringa = OttieniIndiceFile(indTabella);
+            //MessageBox.Show($"{indAlbero}");
+            string riga;
+
+            using (StreamWriter write = new StreamWriter(fileTemp)) { } //creo file temporaneo
+
+            using (StreamReader read = new StreamReader(fileOrig)) //inizio a leggere file originale
+            {
+                while ((riga = read.ReadLine()) != null) //continuo a copiare finche non arrivo al ^. Poi lo aggiungo
+                {
+                    if (riga != "^" && riga != "/" && riga != "*" && riga != "+" && riga.Length >= 20) //se è un separatore oppure solo una classe, con indice e nome
+                    {
+                        if (riga.Substring(0, 20) != $"{indClasseAlunnoMateria}{indTabellaStringa}")
+                        {
+                            using (StreamWriter write = new StreamWriter(fileTemp, true))
+                                write.WriteLine(riga);
+                        }
+                    }
+                    else
+                    {
+                        using (StreamWriter write = new StreamWriter(fileTemp, true))
+                            write.WriteLine(riga);
+                    }
+                }
+            }
+            SovrascrivereFile(fileTemp, fileOrig);
+        }
+        public static void SovrascrivereFile(string fileTemp, string fileOrig)
+        {
+            FileInfo fi = new FileInfo(fileTemp);
+            FileInfo newFi = new FileInfo(fileOrig);
+            newFi.Delete();
+            newFi = fi.CopyTo(fileOrig);
+            fi.Delete();
+        }
+        public static string OttieniIndiceFile(int posizione) //mi aggiunge tutti gli zeri per salvarlo su file
+        {
+            string pos = posizione.ToString();
+            if (pos.Length == 5)
+                return pos;
+            else if (pos.Length == 4)
+                return $"0{pos}";
+            else if (pos.Length == 3)
+                return $"00{pos}";
+            else if (pos.Length == 2)
+                return $"000{pos}";
+            else if (pos.Length == 1)
+                return $"0000{pos}";
+            return "-1";
         }
     }
 }
