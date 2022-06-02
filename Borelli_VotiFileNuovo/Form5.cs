@@ -24,6 +24,9 @@ namespace Borelli_VotiFileNuovo
 
         private void Form5_Load(object sender, EventArgs e)
         {
+            dateTimePicker1.Visible = false;
+            textBox1.Visible = false;
+            button3.Visible = false;
             //dataGridView1.SelectedRows.;
             tabella.Columns.Add("VOTO", typeof(double));
             tabella.Columns.Add("DATA", typeof(string));
@@ -58,13 +61,19 @@ namespace Borelli_VotiFileNuovo
             tabella.Rows.RemoveAt(dataGridView1.CurrentCell.RowIndex);
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private void button2_Click(object sender, EventArgs e) //aggiungi voto
         {
-            //dataGridView1.AllowUserToAddRows = true;
-            //dataGridView1.AllowUserToAddRows = false;
+            dateTimePicker1.Visible = true;
+            textBox1.Visible = true;
+            button3.Visible = true;
+            int posizionePrimaLibera = 0, nuovoIndice = 0;
+            string indiceCLasseAlunnoPrima = "";
+            //MessageBox.Show($"INDICE CLASSE: '{indClasseAlunnoMateria.Substring(0, 5)}'\nINDICE ALUNNO:'{indClasseAlunnoMateria.Substring(5, 5)}'\nINDICE MATERIA:'{indClasseAlunnoMateria.Substring(10, indClasseAlunnoMateria.Length - 10)}'");
+            TrovaIndiceLibero(@"./tmp.txt", dataGridView1, ref nuovoIndice, ref posizionePrimaLibera, indClasseAlunnoMateria.Substring(0, 5), indClasseAlunnoMateria.Substring(5, 10), indClasseAlunnoMateria.Substring(10, indClasseAlunnoMateria.Length - 10), ref indiceCLasseAlunnoPrima);
+            MessageBox.Show(indiceCLasseAlunnoPrima);
         }
 
-        private void button3_Click(object sender, EventArgs e)//aggiungi voto
+        private void button3_Click(object sender, EventArgs e)//ok aggiungi voto
         {
             DateTime helo = dateTimePicker1.Value;
             string heloo = $"{helo.Day}/{helo.Month}/{helo.Year}";
@@ -73,6 +82,66 @@ namespace Borelli_VotiFileNuovo
             //MessageBox.Show(heloo);
         }
 
+        public static void TrovaIndiceLibero(string posizioneOriginale, DataGridView dati, ref int posizioneLiber, ref int posizionePrimaDellaLibera, string indiceClasse, string indiceAlunno, string indiceMateria, ref string indiceClasseAlunnoMateriaPrima)
+        {
+            bool cond = true, superatiAlunni = true, entratoInCiclo = true;
+            string rigaa = "", individuaClasse, cicloMateriaNuova, cicloInternoMateriaNuova = "", individuaAlunno, individuaMateria;
+            int nRiga = 0, contatore = 0;
+            indiceClasseAlunnoMateriaPrima = indiceClasse + indiceAlunno+indiceMateria; //di default sono questi
+            using (StreamReader read = new StreamReader(posizioneOriginale))
+            {
+                while (cond)
+                {
+                    rigaa = read.ReadLine();
+                    if (!superatiAlunni)
+                    {
+                        if (rigaa != "*")//separatore tra materie e fine
+                        {
+                            individuaClasse = rigaa.Substring(0, 5);
+                            individuaAlunno = rigaa.Substring(5, 5); //parto dal 5 (quelli prima sono ola classe) e prendo i 5 che lo seguono
+                            individuaMateria = rigaa.Substring(10, 5);
+                            //MessageBox.Show($"INDICE CLASSE: '{individuaClasse}'\nINDICE ALUNNO: '{individuaAlunno}'\nINDICE MATERIA: '{individuaMateria}'");
+                            if (individuaClasse == indiceClasse && individuaAlunno == indiceAlunno && individuaMateria == indiceMateria) //se appartiene alla stessa classe ed è lo stesso alunno
+                            {
+                                rigaa = rigaa.Substring(15, 5);
+                                entratoInCiclo = false;
+                                if ((contatore != 0) && (int.Parse(rigaa) != nRiga + 1))//se la nuova riga già convertita non è maggiore di uno allora c'è un bugo
+                                {
+                                    posizionePrimaDellaLibera = nRiga;
+                                    posizioneLiber = int.Parse(rigaa) - 1;
+                                    return;
+                                }
+                                nRiga = int.Parse(rigaa);
+                                contatore++;
+                            }
+                        }
+                        else
+                            cond = false;
+                    }
+
+                    if (rigaa == "+")
+                        superatiAlunni = false;
+                }
+            }
+
+            if (!entratoInCiclo)
+                posizionePrimaDellaLibera = nRiga;
+            else
+            {
+                using (StreamReader read = new StreamReader(posizioneOriginale))
+                {
+                    while ((cicloMateriaNuova = read.ReadLine()) != "*") //predo stringa prima della fine dei voti 
+                        cicloInternoMateriaNuova = cicloMateriaNuova;
+                }
+
+                indiceClasseAlunnoMateriaPrima = cicloInternoMateriaNuova.Substring(0, 15); //la nuova classe che precede
+                posizionePrimaDellaLibera = int.Parse(cicloInternoMateriaNuova.Substring(15, 5)); //l'indice della classe
+            }
+
+
+            posizioneLiber = dati.RowCount;
+            return;
+        }
         public static void EliminazioneInFile(string fileOrig, string fileTemp, DataGridView dati, string indClasseAlunnoMateria)
         {
             int indTabella = dati.CurrentCell.RowIndex;
