@@ -13,6 +13,7 @@ namespace Borelli_VotiFileNuovo
 {
     public partial class Form5 : Form
     {
+
         public string indClasseAlunnoMateria { get; set; }
         DataTable tabella = new DataTable();
         string riga;
@@ -81,11 +82,12 @@ namespace Borelli_VotiFileNuovo
             string indiceCLasseAlunnoPrima = "";
             //MessageBox.Show($"INDICE CLASSE: '{indClasseAlunnoMateria.Substring(0, 5)}'\nINDICE ALUNNO:'{indClasseAlunnoMateria.Substring(5, 5)}'\nINDICE MATERIA:'{indClasseAlunnoMateria.Substring(10, indClasseAlunnoMateria.Length - 10)}'");
             TrovaIndiceLibero(@"./tmp.txt", dataGridView1, ref nuovoIndice, ref posizionePrimaLibera, indClasseAlunnoMateria.Substring(0, 5), indClasseAlunnoMateria.Substring(5, 5), indClasseAlunnoMateria.Substring(10, 5), ref indiceCLasseAlunnoPrima);
-            MessageBox.Show(indiceCLasseAlunnoPrima);
+            //MessageBox.Show(indiceCLasseAlunnoPrima);
 
-            string nuovaRiga = indiceCLasseAlunnoPrima, posizionePrimaDellaLibera = indiceCLasseAlunnoPrima;
+            string nuovaRiga = indClasseAlunnoMateria, posizionePrimaDellaLibera = indiceCLasseAlunnoPrima;
             nuovaRiga += OttieniIndiceFile(nuovoIndice);
             posizionePrimaDellaLibera += OttieniIndiceFile(posizionePrimaLibera);
+            MessageBox.Show($"POSIZIONE PRIMA: '{posizionePrimaDellaLibera}'\nNUOVO INDICE: '{nuovaRiga}'");
 
             AggiuntaVotiDateFile(@"./tmp1.txt", @"./tmp.txt", dataGridView1, nuovaRiga, helooo, posizionePrimaDellaLibera);
 

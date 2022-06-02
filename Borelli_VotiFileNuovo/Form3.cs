@@ -26,7 +26,6 @@ namespace Borelli_VotiFileNuovo
         private void Form3_Load(object sender, EventArgs e)
         {
             nuovaForm3 = true;
-
             //MessageBox.Show("SONO NELLA 3" + indiceClasse);
             textBox1.Visible = false;
             button3.Visible = false;
@@ -167,7 +166,7 @@ namespace Borelli_VotiFileNuovo
                     {
                         rigaClasse = riga.Substring(0, 5);
                         riga = riga.Substring(10, riga.Length - 10);
-                        MessageBox.Show($"RIGA CLASSE: '{rigaClasse}'\nNOME DA CERCARE: '{nome}' \nNOME IN FILE: '{riga}'");
+                        //MessageBox.Show($"RIGA CLASSE: '{rigaClasse}'\nNOME DA CERCARE: '{nome}' \nNOME IN FILE: '{riga}'");
                         //MessageBox.Show($"RIGA: '{riga}' NOME:'{nome}'");
                         if ((indice > 0) && int.Parse(rigaClasse) != indClasse) //quando cambio classe l'indice mi torna pari a 0
                             indice = 0;
