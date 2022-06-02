@@ -66,22 +66,74 @@ namespace Borelli_VotiFileNuovo
             dateTimePicker1.Visible = true;
             textBox1.Visible = true;
             button3.Visible = true;
-            int posizionePrimaLibera = 0, nuovoIndice = 0;
-            string indiceCLasseAlunnoPrima = "";
-            //MessageBox.Show($"INDICE CLASSE: '{indClasseAlunnoMateria.Substring(0, 5)}'\nINDICE ALUNNO:'{indClasseAlunnoMateria.Substring(5, 5)}'\nINDICE MATERIA:'{indClasseAlunnoMateria.Substring(10, indClasseAlunnoMateria.Length - 10)}'");
-            TrovaIndiceLibero(@"./tmp.txt", dataGridView1, ref nuovoIndice, ref posizionePrimaLibera, indClasseAlunnoMateria.Substring(0, 5), indClasseAlunnoMateria.Substring(5, 10), indClasseAlunnoMateria.Substring(10, indClasseAlunnoMateria.Length - 10), ref indiceCLasseAlunnoPrima);
-            MessageBox.Show(indiceCLasseAlunnoPrima);
         }
 
         private void button3_Click(object sender, EventArgs e)//ok aggiungi voto
         {
             DateTime helo = dateTimePicker1.Value;
             string heloo = $"{helo.Day}/{helo.Month}/{helo.Year}";
-
+            string helooo = textBox1.Text.ToUpper();
             tabella.Rows.Add(textBox1.Text, heloo);
+
+            helooo += $";{heloo}";
+
+            int posizionePrimaLibera = 0, nuovoIndice = 0;
+            string indiceCLasseAlunnoPrima = "";
+            //MessageBox.Show($"INDICE CLASSE: '{indClasseAlunnoMateria.Substring(0, 5)}'\nINDICE ALUNNO:'{indClasseAlunnoMateria.Substring(5, 5)}'\nINDICE MATERIA:'{indClasseAlunnoMateria.Substring(10, indClasseAlunnoMateria.Length - 10)}'");
+            TrovaIndiceLibero(@"./tmp.txt", dataGridView1, ref nuovoIndice, ref posizionePrimaLibera, indClasseAlunnoMateria.Substring(0, 5), indClasseAlunnoMateria.Substring(5, 5), indClasseAlunnoMateria.Substring(10, 5), ref indiceCLasseAlunnoPrima);
+            MessageBox.Show(indiceCLasseAlunnoPrima);
+
+            string nuovaRiga = indiceCLasseAlunnoPrima, posizionePrimaDellaLibera = indiceCLasseAlunnoPrima;
+            nuovaRiga += OttieniIndiceFile(nuovoIndice);
+            posizionePrimaDellaLibera += OttieniIndiceFile(posizionePrimaLibera);
+
+            AggiuntaVotiDateFile(@"./tmp1.txt", @"./tmp.txt", dataGridView1, nuovaRiga, helooo, posizionePrimaDellaLibera);
+
             //MessageBox.Show(heloo);
+            dateTimePicker1.Visible = false;
+            textBox1.Visible = false;
+            button3.Visible = false;
         }
 
+
+        public static void AggiuntaVotiDateFile(string fileTemp, string fileOrig, DataGridView dati, string nuovoNumeroRiga, string dataVoto, string posizionePrimaDellaLibera)
+        {
+            string riga, rigaCompleta = "";
+            bool condizione = true, superateMaterie = true;
+            using (StreamWriter write = new StreamWriter(fileTemp)) { }
+            using (StreamReader read = new StreamReader(fileOrig))
+            {
+                while (condizione)
+                {
+                    rigaCompleta = read.ReadLine();
+                    if (!superateMaterie)
+                    {
+                        riga = rigaCompleta.Substring(0, 20);
+                        //MessageBox.Show($"RIGA MIA: '{posizionePrimaDellaLibera}'\nRIGA DA CERCARE: '{riga}'");
+                        if (riga == posizionePrimaDellaLibera)
+                            condizione = false;
+                    }
+
+                    using (StreamWriter write = new StreamWriter(fileTemp, true))
+                        write.WriteLine(rigaCompleta);
+
+                    if (rigaCompleta == "+")
+                        superateMaterie = false;
+
+                } //mi fermo a scrivere l'indice prima di inserire il nuovo
+
+                using (StreamWriter write = new StreamWriter(fileTemp, true))
+                    write.WriteLine($"{nuovoNumeroRiga} {dataVoto}"); //scrivo il nuovo e poi chiudo
+
+                while ((riga = read.ReadLine()) != null)
+                {
+                    using (StreamWriter write = new StreamWriter(fileTemp, true))
+                        write.WriteLine(riga);
+                }
+            }
+
+            SovrascrivereFile(fileTemp, fileOrig);
+        }
         public static void TrovaIndiceLibero(string posizioneOriginale, DataGridView dati, ref int posizioneLiber, ref int posizionePrimaDellaLibera, string indiceClasse, string indiceAlunno, string indiceMateria, ref string indiceClasseAlunnoMateriaPrima)
         {
             bool cond = true, superatiAlunni = true, entratoInCiclo = true;
@@ -100,7 +152,7 @@ namespace Borelli_VotiFileNuovo
                             individuaClasse = rigaa.Substring(0, 5);
                             individuaAlunno = rigaa.Substring(5, 5); //parto dal 5 (quelli prima sono ola classe) e prendo i 5 che lo seguono
                             individuaMateria = rigaa.Substring(10, 5);
-                            //MessageBox.Show($"INDICE CLASSE: '{individuaClasse}'\nINDICE ALUNNO: '{individuaAlunno}'\nINDICE MATERIA: '{individuaMateria}'");
+                            //MessageBox.Show($"INDICE CLASSE: '{individuaClasse}' '{indiceClasse}'\nINDICE ALUNNO: '{individuaAlunno}' '{indiceAlunno}'\nINDICE MATERIA: '{individuaMateria}' '{indiceMateria}'");
                             if (individuaClasse == indiceClasse && individuaAlunno == indiceAlunno && individuaMateria == indiceMateria) //se appartiene alla stessa classe ed è lo stesso alunno
                             {
                                 rigaa = rigaa.Substring(15, 5);
@@ -139,14 +191,13 @@ namespace Borelli_VotiFileNuovo
             }
 
 
-            posizioneLiber = dati.RowCount;
+            posizioneLiber = dati.RowCount-1;
             return;
         }
         public static void EliminazioneInFile(string fileOrig, string fileTemp, DataGridView dati, string indClasseAlunnoMateria)
         {
             int indTabella = dati.CurrentCell.RowIndex;
             string indTabellaStringa = OttieniIndiceFile(indTabella);
-            //MessageBox.Show($"{indAlbero}");
             string riga;
 
             using (StreamWriter write = new StreamWriter(fileTemp)) { } //creo file temporaneo

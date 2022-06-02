@@ -228,9 +228,7 @@ namespace Borelli_VotiFileNuovo
                         rigaClasse = riga.Substring(0, 5);
                         rigaAlunno = riga.Substring(5, 5);
                         riga = riga.Substring(15, riga.Length - 15);
-
-                        MessageBox.Show($"RIGA CLASSE: '{rigaClasse}'\nRIGA ALUNNO: '{rigaAlunno}'");
-
+                        //MessageBox.Show($"RIGA CLASSE: '{rigaClasse}'\nRIGA ALUNNO: '{rigaAlunno}'");
                         if ((indice > 0) && (int.Parse(rigaClasse) + int.Parse(rigaAlunno)) != indClasseAlunno) //quando cambio classe l'indice mi torna pari a 0
                             indice = 0;
 
